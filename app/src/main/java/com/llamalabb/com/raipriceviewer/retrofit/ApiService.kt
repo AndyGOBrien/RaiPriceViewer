@@ -1,6 +1,6 @@
 package com.llamalabb.com.raipriceviewer.retrofit
 
-import com.llamalabb.com.raipriceviewer.CoinMarketCapApiObject
+import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,9 +15,9 @@ interface ApiService {
             @Query(value="limit") limit: String = "100",
             @Query(value="start") start: String = "0",
             @Query(value="convert") convert: String = "USD")
-            : Call<CoinMarketCapApiObject>
+            : Call<List<CoinMarketCapCoin>>
 
-    @GET("/v1/ticket/{id}")
-    fun getCoinMarketCapObjectInfo(@Path(value="id") ticker: String?): Call<CoinMarketCapApiObject>
+    @GET("/v1/ticker/{id}/")
+    fun getCoinMarketCapCoinInfo(@Path(value="id") id: String?): Call<List<CoinMarketCapCoin>>
 
 }

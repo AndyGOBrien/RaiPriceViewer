@@ -9,14 +9,14 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object RetroClient {
 
-    private val COIN_MARKET_CAP_BASE_URL = "hhttps://api.coinmarketcap.com"
+    private val COIN_MARKET_CAP_BASE_URL = "https://api.coinmarketcap.com"
 
-    private fun getCoinMarketCapObjectInfo() : Retrofit{
+    private fun getCoinMarketCapCoinRetrofitInstance() : Retrofit{
         return Retrofit.Builder()
                 .baseUrl(COIN_MARKET_CAP_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
     }
 
-    fun getCoinMarketCapCoinInfo() : ApiService = getCoinMarketCapObjectInfo().create(ApiService::class.java)
+    fun getCoinMarketCapCoinApiService() : ApiService = getCoinMarketCapCoinRetrofitInstance().create(ApiService::class.java)
 }
