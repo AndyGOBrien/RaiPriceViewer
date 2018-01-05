@@ -18,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".ApiListenerService"
+            android:exported="false"/>
+        <receiver android:name=".MyAlarmReceiver"
+            android:process=":remote">
+        </receiver>
     </application>
 
 </manifest>

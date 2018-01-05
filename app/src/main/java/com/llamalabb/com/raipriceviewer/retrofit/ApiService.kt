@@ -18,6 +18,6 @@ interface ApiService {
             : Call<List<CoinMarketCapCoin>>
 
     @GET("/v1/ticker/{id}/")
-    fun getCoinMarketCapCoinInfo(@Path(value="id") id: String?): Call<List<CoinMarketCapCoin>>
+    fun getCoinMarketCapCoinInfo(@Path(value="id") id: String?,@Query(value = "convert") convert: String = "EUR"): Call<List<CoinMarketCapCoin>>
 
 }

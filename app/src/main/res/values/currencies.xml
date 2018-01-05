@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="json_currency_map">
+        {
+        "AUD":"$",
+        "BRL":"R$",
+        "CAD":"$",
+        "CHF":"CHF",
+        "CLP":"$",
+        "CNY":"¥",
+        "CZK":"Kč",
+        "DKK":"kr",
+        "EUR":"€",
+        "GBP":"£",
+        "HKD":"$",
+        "HUF":"Ft",
+        "IDR":"Rp",
+        "ILS":"₪",
+        "INR":"₹",
+        "JPY":"¥",
+        "KRW":"₩",
+        "MXN":"$",
+        "MYR":"RM",
+        "NOK":"kr",
+        "NZD":"$",
+        "PHP":"₱",
+        "PKR":"₨",
+        "PLN":"zł",
+        "RUB":"₽",
+        "SEK":"kr",
+        "SGD":"$",
+        "THB":"฿",
+        "TRY":"₺",
+        "TWD":"NT$",
+        "USD":"$",
+        "ZAR":"R"
+        }
+    </string>
+
+    <string name="AUD">$</string>
+    <string name="BRL">R$</string>
+    <string name="CAD">$</string>
+    <string name="CHF">CHF</string>
+    <string name="CLP">$</string>
+    <string name="CNY">¥</string>
+    <string name="CZK">Kč</string>
+    <string name="DKK">kr</string>
+    <string name="EUR">€</string>
+    <string name="GBP">£</string>
+    <string name="HKD">$</string>
+    <string name="HUF">Ft</string>
+    <string name="IDR">Rp</string>
+    <string name="ILS">₪</string>
+    <string name="INR">₹</string>
+    <string name="JPY">¥</string>
+    <string name="KRW">₩</string>
+    <string name="MXN">$</string>
+    <string name="MYR">RM</string>
+    <string name="NOK">kr</string>
+    <string name="NZD">$</string>
+    <string name="PHP">₱</string>
+    <string name="PKR">₨</string>
+    <string name="PLN">zł</string>
+    <string name="RUB">₽</string>
+    <string name="SEK">kr</string>
+    <string name="SGD">$</string>
+    <string name="THB">฿</string>
+    <string name="TRY">₺</string>
+    <string name="TWD">NT$</string>
+    <string name="USD">$</string>
+    <string name="ZAR">R</string>
+
+    <string-array name="currency_array">
+        <item>AUD</item>
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CHF</item>
+        <item>CLP</item>
+        <item>CNY</item>
+        <item>CZK</item>
+        <item>DKK</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>HKD</item>
+        <item>HUF</item>
+        <item>IDR</item>
+        <item>ILS</item>
+        <item>INR</item>
+        <item>JPY</item>
+        <item>KRW</item>
+        <item>MXN</item>
+        <item>MYR</item>
+        <item>NOK</item>
+        <item>NZD</item>
+        <item>PHP</item>
+        <item>PKR</item>
+        <item>PLN</item>
+        <item>RUB</item>
+        <item>SEK</item>
+        <item>SGD</item>
+        <item>THB</item>
+        <item>TRY</item>
+        <item>TWD</item>
+        <item>USD</item>
+        <item>ZAR</item>
+    </string-array>
+</resources>
