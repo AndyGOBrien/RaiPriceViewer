@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.llamalabb.com.raipriceviewer.MainActivity">
+    tools:context="com.llamalabb.com.raipriceviewer.coindetails.CoinDetailsActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -94,48 +94,79 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
-        <TextView
-            android:id="@+id/volume_tv"
+        <LinearLayout
+            android:id="@+id/market_cap_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="$60,269,700 USD"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/market_cap_tv"
-            app:layout_constraintTop_toBottomOf="@+id/volume_title" />
-
-        <TextView
-            android:id="@+id/volume_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Volume"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/volume_tv"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/market_cap_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Market Cap"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/market_cap_tv"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/market_cap_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="$4,243,232,123 USD"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/market_cap_title" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/market_cap_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Market Cap"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/market_cap_tv"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/market_cap_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$4,000,000,000 USD"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/market_cap_title" />
+
+            <TextView
+                android:id="@+id/rank_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rank: 15"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="@+id/market_cap_title"
+                app:layout_constraintTop_toBottomOf="@+id/market_cap_tv" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/volume_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/market_cap_container"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/volume_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Volume"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/volume_tv"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/volume_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="$60,269,700 USD"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/market_cap_tv"
+                app:layout_constraintTop_toBottomOf="@+id/volume_title" />
+
+        </LinearLayout>
+
     </android.support.constraint.ConstraintLayout>
 
     <ImageView
@@ -148,6 +179,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/raiblocks_logo" />
+
+    <Button
+        android:id="@+id/currency_select_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="USD"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

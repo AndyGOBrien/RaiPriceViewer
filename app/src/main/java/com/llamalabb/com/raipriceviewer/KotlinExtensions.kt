@@ -9,4 +9,4 @@ import java.text.NumberFormat
 
 fun Double.toTwoDecimalPlacesAbs() = "%.2f".format(Math.abs(this))
 fun Double.toTwoDecimalPlaces() = "%.2f".format(this)
-fun String.formatNumber() = NumberFormat.getIntegerInstance().format(this.toDouble())
+fun String.formatNumber() : String = NumberFormat.getIntegerInstance().format(this.toDouble())
