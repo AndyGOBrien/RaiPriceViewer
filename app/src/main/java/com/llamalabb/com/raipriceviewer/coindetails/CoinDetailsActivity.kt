@@ -1,27 +1,20 @@
 package com.llamalabb.com.raipriceviewer.coindetails
 
 import android.app.AlarmManager
-import android.app.FragmentManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.widget.TextView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.llamalabb.com.raipriceviewer.*
 import com.llamalabb.com.raipriceviewer.R
-import com.llamalabb.com.raipriceviewer.model.AppDatabase
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
-import com.raizlabs.android.dbflow.config.DatabaseConfig
-import com.raizlabs.android.dbflow.config.FlowConfig
-import com.raizlabs.android.dbflow.config.FlowManager
 import com.raizlabs.android.dbflow.kotlinextensions.*
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import kotlinx.android.synthetic.main.activity_coin_details.*
@@ -30,8 +23,8 @@ class CoinDetailsActivity :
         AppCompatActivity(),
         CoinDetailsContract.CoinDetailsView,
         SelectGridItemDialogFragment.ItemSelectCallBack {
-    override var presenter: CoinDetailsContract.CoinDetailsPresenter = CoinDetailsPresenter(this)
 
+    override var presenter: CoinDetailsContract.CoinDetailsPresenter = CoinDetailsPresenter(this)
     private lateinit var broadcastReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +32,36 @@ class CoinDetailsActivity :
         setContentView(R.layout.activity_coin_details)
         setupServiceReceiver()
         currency_select_button.setOnClickListener { showCurrencySelectDialog() }
+        runService(false)
+        currency_select_button.text = MyApp.settings.getString(Settings.CURRENCY, "USD")
+
+        MobileAds.initialize(this, getString(R.string.mobile_ad))
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     override fun itemClicked(text: String) {
+        MyApp.settings.edit().putString(Settings.CURRENCY, text).commit()
         currency_select_button.text = text
-
         val prev = supportFragmentManager.findFragmentByTag("select_item")
         prev?.let{ (prev as DialogFragment).dismiss() }
+        runService(true)
+    }
+
+    fun runService(isForced: Boolean){
+        val coin: CoinMarketCapCoin? = SQLite.select()
+                .from(CoinMarketCapCoin::class)
+                .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
+                .querySingle()
+
+        val coinLastUpdated = if(coin != null) {
+            System.currentTimeMillis() - coin.last_updated.toLong()
+        } else 0
+        if(coinLastUpdated <= 10000 || isForced) {
+            val intent = Intent(this, ApiListenerService::class.java)
+            intent.putExtra("id", "raiblocks")
+            startService(intent)
+        }
     }
 
     private fun setupServiceReceiver(){
@@ -58,16 +74,7 @@ class CoinDetailsActivity :
         }
     }
 
-    private fun initDatabase(){
-        FlowManager.init(FlowConfig.builder(this)
-                .addDatabaseConfig(DatabaseConfig.builder(AppDatabase::class.java)
-                        .databaseName("AppDatabase")
-                        .build())
-                .build())
-    }
-
     private fun coinUpdate(){
-        initDatabase()
         val coin: CoinMarketCapCoin? = SQLite.select()
                 .from(CoinMarketCapCoin::class)
                 .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
@@ -75,21 +82,33 @@ class CoinDetailsActivity :
         coin?.let {showCoinInfo(it)}
     }
 
-
-
     fun showCoinInfo(coin: CoinMarketCapCoin){
+        val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
+        val currencySymbol = Settings.currencyMap[currency]
+        val fiatPrice: String?
+        val marketCap: String?
+        val volume: String?
         val percentChange = coin.percent_change_24h.toDouble()
         val absPercentChange = percentChange.toTwoDecimalPlacesAbs()
-        val fiatPrice = coin.price_usd.toDouble().toTwoDecimalPlaces()
-        val marketCap = coin.market_cap_usd.formatNumber()
-        val volume = coin.volume_usd.formatNumber()
         val btcPrice = coin.price_btc
+
+        if(currency == "USD"){
+            fiatPrice = coin.price_usd.toDouble().toTwoDecimalPlaces()
+            marketCap = coin.market_cap_usd.formatNumber()
+            volume = coin.volume_usd.formatNumber()
+        } else {
+            fiatPrice = coin.altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces()
+            marketCap = coin.altCurrencyMarketCap?.formatNumber()
+            volume = coin.altCurrencyVol?.formatNumber()
+        }
+
         setPercentChangeColor(percentChange >= 0, fiat_percent_change_tv)
-        fiat_price_tv.text = "$$fiatPrice"
+        fiat_price_tv.text = currencySymbol + fiatPrice
+        currency_tv.text = currency
         price_crypt_tv.text = "$btcPrice BTC"
         fiat_percent_change_tv.text = "($absPercentChange%)"
-        market_cap_tv.text = "$$marketCap USD"
-        volume_tv.text = "$$volume USD"
+        market_cap_tv.text = currencySymbol + "$marketCap " + currency
+        volume_tv.text = currencySymbol + "$volume " + currency
         rank_tv.text = "Rank: " + coin.rank
     }
 
@@ -114,7 +133,7 @@ class CoinDetailsActivity :
                 intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val firstMillis = System.currentTimeMillis()
         val alarm = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, 60000, pIntent)
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, 300000, pIntent)
     }
 
     override fun onPause() {

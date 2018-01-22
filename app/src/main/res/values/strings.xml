@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">RaiPriceViewer</string>
-
+    <string name="app_name">Rai Price</string>
+    <string name="banner_ad_unit_id">ca-app-pub-7288133960062169/1076230416</string>
+    <string name="mobile_ad">ca-app-pub-7288133960062169~2366450726</string>
 </resources>

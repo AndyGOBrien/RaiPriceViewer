@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "794947680092",
+    "firebase_url": "https://raipriceviewer.firebaseio.com",
+    "project_id": "raipriceviewer",
+    "storage_bucket": "raipriceviewer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794947680092:android:bf175e92723def07",
+        "android_client_info": {
+          "package_name": "com.llamalabb.com.raipriceviewer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "794947680092-a93dmqithkfb9plvc97ha6jm8rhfa1eu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.llamalabb.com.raipriceviewer",
+            "certificate_hash": "9a4a9cdd223a14f37db51152dd74ad1014ee4f44"
+          }
+        },
+        {
+          "client_id": "794947680092-k1ec087pm5dr8eo3kqh1lhftdpefjc0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl59qcd48EQY_A06bjVnCdoCAg0uZrqiY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "794947680092-k1ec087pm5dr8eo3kqh1lhftdpefjc0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

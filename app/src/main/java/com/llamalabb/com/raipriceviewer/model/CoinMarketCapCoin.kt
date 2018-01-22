@@ -105,7 +105,7 @@ data class CoinMarketCapCoin(
                         "price_twd",
                         "price_zar"])
         @Expose
-        var altCurrencyPrice: String = "",
+        var altCurrencyPrice: String? = null,
         @Column
         @SerializedName(value="24h_volume_eur",alternate =
                         ["24h_volume_aud",
@@ -136,7 +136,7 @@ data class CoinMarketCapCoin(
                         "24h_volume_twd",
                         "24h_volume_zar"])
         @Expose
-        var altCurrencyVol: String = "",
+        var altCurrencyVol: String? = null,
         @Column
         @SerializedName(value="market_cap_eur", alternate =
                         ["market_cap_aud",
@@ -167,5 +167,5 @@ data class CoinMarketCapCoin(
                         "market_cap_twd",
                         "market_cap_zar"])
         @Expose
-        var altCurrencyMarketCap: String = ""
+        var altCurrencyMarketCap: String? = null
 )

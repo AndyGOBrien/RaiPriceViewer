@@ -1,4 +1,4 @@
-package com.llamalabb.com.raipriceviewer
+package com.llamalabb.com.raipriceviewer.base
 
 /**
  * Created by andy on 1/5/18.
