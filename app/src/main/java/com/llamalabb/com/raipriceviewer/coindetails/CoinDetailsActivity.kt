@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.util.Log
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -26,13 +27,13 @@ class CoinDetailsActivity :
 
     override var presenter: CoinDetailsContract.CoinDetailsPresenter = CoinDetailsPresenter(this)
     private lateinit var broadcastReceiver: BroadcastReceiver
+    private val UPDATE_DELAY: Long = 10000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coin_details)
         setupServiceReceiver()
         currency_select_button.setOnClickListener { showCurrencySelectDialog() }
-        runService(false)
         currency_select_button.text = MyApp.settings.getString(Settings.CURRENCY, "USD")
 
         MobileAds.initialize(this, getString(R.string.mobile_ad))
@@ -49,15 +50,11 @@ class CoinDetailsActivity :
     }
 
     fun runService(isForced: Boolean){
-        val coin: CoinMarketCapCoin? = SQLite.select()
-                .from(CoinMarketCapCoin::class)
-                .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
-                .querySingle()
+        val currentTime = System.currentTimeMillis()
+        val coinLastUpdated: Long = currentTime - MyApp.settings.getLong(Settings.LAST_UPDATE, currentTime - UPDATE_DELAY)
 
-        val coinLastUpdated = if(coin != null) {
-            System.currentTimeMillis() - coin.last_updated.toLong()
-        } else 0
-        if(coinLastUpdated <= 10000 || isForced) {
+        if(coinLastUpdated >= UPDATE_DELAY || isForced) {
+            Log.d("CoinDetailsActivity", "Service run")
             val intent = Intent(this, ApiListenerService::class.java)
             intent.putExtra("id", "raiblocks")
             startService(intent)
@@ -147,5 +144,6 @@ class CoinDetailsActivity :
                 IntentFilter(ApiListenerService.BROADCAST_PRICE_CHANGE))
         scheduleAlarm()
         coinUpdate()
+        runService(false)
     }
 }

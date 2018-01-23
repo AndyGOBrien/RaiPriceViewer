@@ -5,6 +5,7 @@ package com.llamalabb.com.raipriceviewer
  */
 object Settings {
     const val CURRENCY = "currency"
+    const val LAST_UPDATE = "lastUpdate"
     val currencyMap = mapOf(
             Pair("AUD","$"),
             Pair("BRL","R$"),

@@ -29,6 +29,7 @@ class ApiListenerService : IntentService("CoinMarketCapApiListener") {
             try{
                 val coinData = call.execute().body()?.get(0)
                 coinData?.save()
+                MyApp.settings.edit().putLong(Settings.LAST_UPDATE, System.currentTimeMillis()).commit()
             } catch(e: Exception) {
                 return
             }
