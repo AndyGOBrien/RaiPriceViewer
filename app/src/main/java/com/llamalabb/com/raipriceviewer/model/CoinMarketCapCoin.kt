@@ -3,9 +3,6 @@ package com.llamalabb.com.raipriceviewer.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.llamalabb.com.raipriceviewer.formatNumber
-import com.llamalabb.com.raipriceviewer.toTwoDecimalPlaces
-import com.llamalabb.com.raipriceviewer.toTwoDecimalPlacesAbs
 import com.raizlabs.android.dbflow.annotation.Column
 import com.raizlabs.android.dbflow.annotation.PrimaryKey
 import com.raizlabs.android.dbflow.annotation.Table
@@ -77,11 +74,14 @@ data class CoinMarketCapCoin(
         var last_updated: String = "",
         @Column
         @SerializedName(value="price_eur", alternate =
-                        ["price_aud",
+                    ["price_aud",
                         "price_brl",
                         "price_cad",
                         "price_chf",
                         "price_clp",
+                        "price_cny",
+                        "price_czk",
+                        "price_dkk",
                         "price_gbp",
                         "price_hkd",
                         "price_huf",
@@ -113,6 +113,9 @@ data class CoinMarketCapCoin(
                         "24h_volume_cad",
                         "24h_volume_chf",
                         "24h_volume_clp",
+                        "24h_volume_cny",
+                        "24h_volume_czk",
+                        "24h_volume_dkk",
                         "24h_volume_gbp",
                         "24h_volume_hkd",
                         "24h_volume_huf",
@@ -144,6 +147,9 @@ data class CoinMarketCapCoin(
                         "market_cap_cad",
                         "market_cap_chf",
                         "market_cap_clp",
+                        "market_cap_cny",
+                        "market_cap_czk",
+                        "market_cap_dkk",
                         "market_cap_gbp",
                         "market_cap_hkd",
                         "market_cap_huf",

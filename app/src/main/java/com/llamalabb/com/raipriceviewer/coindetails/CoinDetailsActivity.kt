@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
@@ -55,7 +56,7 @@ class CoinDetailsActivity :
 
         if(coinLastUpdated >= UPDATE_DELAY || isForced) {
             Log.d("CoinDetailsActivity", "Service run")
-            val intent = Intent(this, ApiListenerService::class.java)
+            val intent = Intent(this, CMCApiJobIntentService::class.java)
             intent.putExtra("id", "raiblocks")
             startService(intent)
         }
@@ -65,7 +66,7 @@ class CoinDetailsActivity :
         broadcastReceiver = object: BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
                 when(intent?.action){
-                    ApiListenerService.BROADCAST_PRICE_CHANGE -> coinUpdate()
+                    CMCApiJobIntentService.BROADCAST_PRICE_CHANGE -> coinUpdate()
                 }
             }
         }
@@ -124,13 +125,12 @@ class CoinDetailsActivity :
     }
 
     private fun scheduleAlarm(){
-        intent = Intent(applicationContext, MyAlarmReceiver::class.java)
-        intent.putExtra("id", "raiblocks")
-        val pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val firstMillis = System.currentTimeMillis()
+        val i = Intent(this, MyAlarmReceiver::class.java)
+        i.putExtra("id", "raiblocks")
+        i.action = MyAlarmReceiver.ACTION
+        val pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, i, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarm = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, 300000, pIntent)
+        alarm.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30000, 300000, pIntent)
     }
 
     override fun onPause() {
@@ -141,7 +141,7 @@ class CoinDetailsActivity :
     override fun onResume() {
         super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                IntentFilter(ApiListenerService.BROADCAST_PRICE_CHANGE))
+                IntentFilter(CMCApiJobIntentService.BROADCAST_PRICE_CHANGE))
         scheduleAlarm()
         coinUpdate()
         runService(false)

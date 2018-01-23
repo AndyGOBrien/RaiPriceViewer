@@ -4,22 +4,25 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.util.Log
 
 /**
  * Created by andy on 1/3/18.
  */
 class MyAlarmReceiver : BroadcastReceiver(){
     companion object {
-        val REQUEST_CODE = 5000
-        val ACTION = "com.llamalabb.raipriceviewer.service.alarm"
+        const val REQUEST_CODE = 5000
+        const val ACTION = "com.llamalabb.raipriceviewer.service.alarm"
     }
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d("MyAlarmReceiver", "Alarm Started")
         if(isNetworkAvailable(context)) {
             val id = intent.getStringExtra("id")
-            val i = Intent(context, ApiListenerService::class.java)
+            val i = Intent(context, CMCApiJobIntentService::class.java)
             i.putExtra("id", id)
-            context.startService(i)
+            CMCApiJobIntentService.enqueueWork(context, i)
         }
+        Log.d("MyAlarmReceiver", "Alarm Ended")
     }
     private fun isNetworkAvailable(context: Context) : Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
