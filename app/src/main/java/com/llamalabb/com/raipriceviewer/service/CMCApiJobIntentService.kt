@@ -1,16 +1,23 @@
-package com.llamalabb.com.raipriceviewer
+package com.llamalabb.com.raipriceviewer.service
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.support.v4.app.JobIntentService
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
+import android.widget.RemoteViews
+import com.llamalabb.com.raipriceviewer.MyApp
+import com.llamalabb.com.raipriceviewer.R
+import com.llamalabb.com.raipriceviewer.Settings
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.retrofit.ApiService
 import com.llamalabb.com.raipriceviewer.retrofit.RetroClient
+import com.llamalabb.com.raipriceviewer.widget.PriceViewWidget
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import retrofit2.Call
 
@@ -45,11 +52,20 @@ class CMCApiJobIntentService : JobIntentService() {
                         .commit()
                 Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
             } catch(e: Exception) { return }
+            finally {
+                broadcastWidgetUpdate()
+            }
             val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
             broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
         }
         Log.d("CMCApiJobIntentService", "Service Ended")
+    }
+
+    private fun broadcastWidgetUpdate(){
+        val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(application, PriceViewWidget::class.java))
+        val myWidget = PriceViewWidget()
+        myWidget.onUpdate(this, AppWidgetManager.getInstance(this), ids)
     }
 
     private fun isNetworkAvailable(context: Context) : Boolean {
