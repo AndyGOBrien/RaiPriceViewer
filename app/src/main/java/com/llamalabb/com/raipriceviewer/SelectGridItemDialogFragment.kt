@@ -8,8 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.TextView
+import android.widget.Button
+import kotlinx.android.synthetic.main.item_grid_selection.view.*
 
 
 /**
@@ -59,8 +59,8 @@ class SelectGridItemDialogFragment : DialogFragment() {
     class ItemSelectGridAdapter(val itemArr: Array<String>, val callBack: ItemSelectCallBack) : RecyclerView.Adapter<ItemSelectGridAdapter.ItemViewHolder>(){
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            holder.txtView.text = itemArr[position]
-            holder.txtView.setOnClickListener { callBack.itemClicked(itemArr[position]) }
+            holder.button.text = itemArr[position]
+            holder.button.setOnClickListener { callBack.itemClicked(itemArr[position]) }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -72,7 +72,7 @@ class SelectGridItemDialogFragment : DialogFragment() {
         override fun getItemCount() = itemArr.size
 
         class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view){
-            val txtView = view.findViewById<TextView>(R.id.sel_cur_tv)
+            val button: Button = view.select_currency_button
         }
     }
 }

@@ -31,6 +31,7 @@ class CMCApiJobIntentService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         Log.d("CMCApiJobIntentService", "Service Started")
         if(isNetworkAvailable(this)) {
+            MyApp.settings = this.getSharedPreferences("Settings", Context.MODE_PRIVATE)
             val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
             val id = intent.getStringExtra("id")
             val api: ApiService = RetroClient.getCoinMarketCapCoinApiService()
@@ -38,7 +39,10 @@ class CMCApiJobIntentService : JobIntentService() {
             try{
                 val coinData = call.execute().body()?.get(0)
                 coinData?.save()
-                MyApp.settings.edit().putLong(Settings.LAST_UPDATE, System.currentTimeMillis()).commit()
+                MyApp.settings
+                        .edit()
+                        .putLong(Settings.LAST_UPDATE, System.currentTimeMillis())
+                        .commit()
                 Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
             } catch(e: Exception) { return }
             val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
