@@ -2,12 +2,9 @@ package com.llamalabb.com.raipriceviewer.widget
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.support.v4.content.ContextCompat
 import android.widget.RemoteViews
-import android.widget.TextView
 import com.llamalabb.com.raipriceviewer.*
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
@@ -40,25 +37,14 @@ class PriceViewWidget : AppWidgetProvider() {
 
     private fun updateWidget(context: Context?, appWidgetManager: AppWidgetManager?, appwidgetId: Int, coin: CoinMarketCapCoin){
         val views = RemoteViews(context?.packageName, R.layout.widget_layout)
-
         val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
         val currencySymbol = Settings.currencyMap[currency]
-        val fiatPrice: String?
-        val marketCap: String?
-        val volume: String?
         val percentChange = coin.percent_change_24h.toDouble()
         val absPercentChange = percentChange.toTwoDecimalPlacesAbs()
         val btcPrice = coin.price_btc
 
-        if (currency == "USD") {
-            fiatPrice = coin.price_usd.toDouble().toTwoDecimalPlaces()
-            marketCap = coin.market_cap_usd.formatNumber()
-            volume = coin.volume_usd.formatNumber()
-        } else {
-            fiatPrice = coin.altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces()
-            marketCap = coin.altCurrencyMarketCap?.formatNumber()
-            volume = coin.altCurrencyVol?.formatNumber()
-        }
+        val fiatPrice = if (currency == "USD") { coin.price_usd.toDouble().toTwoDecimalPlaces() }
+        else { coin.altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces() }
 
         views.setTextViewText(R.id.widget_fiat_price_tv, currencySymbol + fiatPrice)
         views.setTextViewText(R.id.widget_currency_tv, currency)
