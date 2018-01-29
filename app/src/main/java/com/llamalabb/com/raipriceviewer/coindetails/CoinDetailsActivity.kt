@@ -2,22 +2,26 @@ package com.llamalabb.com.raipriceviewer.coindetails
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.*
-import android.support.v7.app.AppCompatActivity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.llamalabb.com.raipriceviewer.*
-import com.llamalabb.com.raipriceviewer.R
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
-import com.raizlabs.android.dbflow.kotlinextensions.*
+import com.llamalabb.com.raipriceviewer.service.CMCApiJobIntentService
+import com.llamalabb.com.raipriceviewer.service.MyAlarmReceiver
+import com.raizlabs.android.dbflow.kotlinextensions.from
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import kotlinx.android.synthetic.main.activity_coin_details.*
 
@@ -46,15 +50,15 @@ class CoinDetailsActivity :
         MyApp.settings.edit().putString(Settings.CURRENCY, text).commit()
         currency_select_button.text = text
         val prev = supportFragmentManager.findFragmentByTag("select_item")
-        prev?.let{ (prev as DialogFragment).dismiss() }
+        prev?.let { (prev as DialogFragment).dismiss() }
         runService(true)
     }
 
-    fun runService(isForced: Boolean){
+    fun runService(isForced: Boolean) {
         val currentTime = System.currentTimeMillis()
         val coinLastUpdated: Long = currentTime - MyApp.settings.getLong(Settings.LAST_UPDATE, currentTime - UPDATE_DELAY)
 
-        if(coinLastUpdated >= UPDATE_DELAY || isForced) {
+        if (coinLastUpdated >= UPDATE_DELAY || isForced) {
             Log.d("CoinDetailsActivity", "Service run")
             val intent = Intent(this, CMCApiJobIntentService::class.java)
             intent.putExtra("id", "raiblocks")
@@ -62,25 +66,25 @@ class CoinDetailsActivity :
         }
     }
 
-    private fun setupServiceReceiver(){
-        broadcastReceiver = object: BroadcastReceiver(){
+    private fun setupServiceReceiver() {
+        broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                when(intent?.action){
+                when (intent?.action) {
                     CMCApiJobIntentService.BROADCAST_PRICE_CHANGE -> coinUpdate()
                 }
             }
         }
     }
 
-    private fun coinUpdate(){
+    private fun coinUpdate() {
         val coin: CoinMarketCapCoin? = SQLite.select()
                 .from(CoinMarketCapCoin::class)
                 .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
                 .querySingle()
-        coin?.let {showCoinInfo(it)}
+        coin?.let { showCoinInfo(it) }
     }
 
-    fun showCoinInfo(coin: CoinMarketCapCoin){
+    fun showCoinInfo(coin: CoinMarketCapCoin) {
         val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
         val currencySymbol = Settings.currencyMap[currency]
         val fiatPrice: String?
@@ -90,7 +94,7 @@ class CoinDetailsActivity :
         val absPercentChange = percentChange.toTwoDecimalPlacesAbs()
         val btcPrice = coin.price_btc
 
-        if(currency == "USD"){
+        if (currency == "USD") {
             fiatPrice = coin.price_usd.toDouble().toTwoDecimalPlaces()
             marketCap = coin.market_cap_usd.formatNumber()
             volume = coin.volume_usd.formatNumber()
@@ -110,21 +114,21 @@ class CoinDetailsActivity :
         rank_tv.text = "Rank: " + coin.rank
     }
 
-    fun showCurrencySelectDialog(){
+    fun showCurrencySelectDialog() {
         val fm = supportFragmentManager
         val frag = SelectGridItemDialogFragment.newInstance("Select Currency",
                 resources.getStringArray(R.array.currency_array))
         frag.show(fm, "select_item")
     }
 
-    fun setPercentChangeColor(isPositive: Boolean, textView: TextView){
-        if(isPositive)
+    fun setPercentChangeColor(isPositive: Boolean, textView: TextView) {
+        if (isPositive)
             textView.setTextColor(ContextCompat.getColor(this, R.color.value_up))
         else
             textView.setTextColor(ContextCompat.getColor(this, R.color.value_down))
     }
 
-    private fun scheduleAlarm(){
+    private fun scheduleAlarm() {
         val i = Intent(this, MyAlarmReceiver::class.java)
         i.putExtra("id", "raiblocks")
         i.action = MyAlarmReceiver.ACTION
