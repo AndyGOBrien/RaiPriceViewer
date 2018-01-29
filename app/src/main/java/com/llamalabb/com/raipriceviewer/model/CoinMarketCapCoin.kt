@@ -3,6 +3,8 @@ package com.llamalabb.com.raipriceviewer.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.llamalabb.com.raipriceviewer.*
+import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table.*
 import com.raizlabs.android.dbflow.annotation.Column
 import com.raizlabs.android.dbflow.annotation.PrimaryKey
 import com.raizlabs.android.dbflow.annotation.Table
@@ -174,4 +176,25 @@ data class CoinMarketCapCoin(
                         "market_cap_zar"])
         @Expose
         var altCurrencyMarketCap: String? = null
-)
+){
+    private val currency: String = MyApp.settings.getString(Settings.CURRENCY, "USD")
+    private val currencySymbol = Settings.currencyMap[currency]
+    fun getFormattedFiatPrice() : String? {
+        val price = if (currency == "USD") price_usd.toDouble().toTwoDecimalPlaces() else altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces()
+        return "$currencySymbol$price"
+    }
+
+    fun getFormattedMarketCap() : String? {
+        val marketCap =  if (currency == "USD") market_cap_usd.formatNumber() else altCurrencyMarketCap?.formatNumber()
+        return "$currencySymbol$marketCap $currency"
+    }
+
+    fun getFormattedVolume() : String? {
+        val volume = if (currency == "USD") volume_usd.formatNumber() else altCurrencyVol?.formatNumber()
+        return "$currencySymbol$volume $currency"
+    }
+
+    fun getFormattedPercentChanged()  = "(${percent_change_24h.toDouble().toTwoDecimalPlacesAbs()}%)"
+
+    fun getFormattedBTCPrice() = "$price_btc BTC"
+}

@@ -6,6 +6,9 @@ package com.llamalabb.com.raipriceviewer
 object Settings {
     const val CURRENCY = "currency"
     const val LAST_UPDATE = "lastUpdate"
+    const val IS_NOTIFICATION_ENABLED = "is_notification_enabled"
+    const val NOTIFICATION_CHANNEL_ID = "rai_price_notification_01"
+    const val NOTIFICATION_ID = 209212
     val currencyMap = mapOf(
             Pair("AUD","$"),
             Pair("BRL","R$"),
