@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="$0.00"
+            android:text="$17.68"
             android:textColor="#ffffff"
             android:textSize="30sp" />
 
@@ -36,8 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="(0.00%)"
-            android:textColor="#ffffff"
+            android:text="(32.66%)"
+            android:textColor="@color/value_up"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:text="0.000000 BTC"
+        android:text="0.0015797 BTC"
         android:textColor="#ffffff"
         android:textSize="10sp" />
 

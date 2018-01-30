@@ -8,7 +8,7 @@
     tools:context="com.llamalabb.com.raipriceviewer.coindetails.CoinDetailsActivity">
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/details_price_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -81,8 +81,8 @@
         android:layout_marginStart="2dp"
         android:text="0.000000 BTC"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="@+id/details_price_layout"
+        app:layout_constraintTop_toBottomOf="@+id/details_price_layout" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/extra_info_container"
@@ -93,7 +93,7 @@
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/details_price_layout">
 
         <LinearLayout
             android:id="@+id/market_cap_container"
@@ -118,7 +118,7 @@
                 android:id="@+id/market_cap_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$4,000,000,000 USD"
+                android:text="$0,000,000,000 USD"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -128,7 +128,7 @@
                 android:id="@+id/rank_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rank: 15"
+                android:text="Rank: 0"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="@+id/market_cap_title"
@@ -160,7 +160,7 @@
                 android:id="@+id/volume_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="$60,269,700 USD"
+                android:text="$0,000,000 USD"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/market_cap_tv"
@@ -204,6 +204,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <Switch
+        android:id="@+id/toggle_notification_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:switchPadding="16dp"
+        android:text="Toggle Notification Bar"
+        android:textColorLink="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/extra_info_container" />
 
 
 </android.support.constraint.ConstraintLayout>

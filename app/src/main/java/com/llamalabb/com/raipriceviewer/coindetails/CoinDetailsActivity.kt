@@ -1,6 +1,7 @@
 package com.llamalabb.com.raipriceviewer.coindetails
 
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,10 +10,12 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.RemoteViews
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -38,6 +41,7 @@ class CoinDetailsActivity :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coin_details)
         setupServiceReceiver()
+        setNotificationBar()
         currency_select_button.setOnClickListener { showCurrencySelectDialog() }
         currency_select_button.text = MyApp.settings.getString(Settings.CURRENCY, "USD")
 
@@ -86,32 +90,16 @@ class CoinDetailsActivity :
 
     fun showCoinInfo(coin: CoinMarketCapCoin) {
         val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
-        val currencySymbol = Settings.currencyMap[currency]
-        val fiatPrice: String?
-        val marketCap: String?
-        val volume: String?
         val percentChange = coin.percent_change_24h.toDouble()
-        val absPercentChange = percentChange.toTwoDecimalPlacesAbs()
-        val btcPrice = coin.price_btc
-
-        if (currency == "USD") {
-            fiatPrice = coin.price_usd.toDouble().toTwoDecimalPlaces()
-            marketCap = coin.market_cap_usd.formatNumber()
-            volume = coin.volume_usd.formatNumber()
-        } else {
-            fiatPrice = coin.altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces()
-            marketCap = coin.altCurrencyMarketCap?.formatNumber()
-            volume = coin.altCurrencyVol?.formatNumber()
-        }
 
         setPercentChangeColor(percentChange >= 0, fiat_percent_change_tv)
-        fiat_price_tv.text = currencySymbol + fiatPrice
+        fiat_price_tv.text = coin.getFormattedFiatPrice()
         currency_tv.text = currency
-        price_crypt_tv.text = "$btcPrice BTC"
-        fiat_percent_change_tv.text = "($absPercentChange%)"
-        market_cap_tv.text = currencySymbol + "$marketCap " + currency
-        volume_tv.text = currencySymbol + "$volume " + currency
-        rank_tv.text = "Rank: " + coin.rank
+        price_crypt_tv.text = coin.getFormattedBTCPrice()
+        fiat_percent_change_tv.text = coin.getFormattedPercentChanged()
+        market_cap_tv.text = coin.getFormattedMarketCap()
+        volume_tv.text = coin.getFormattedVolume()
+        rank_tv.text = "Rank: ${coin.rank}"
     }
 
     fun showCurrencySelectDialog() {
@@ -137,6 +125,51 @@ class CoinDetailsActivity :
         alarm.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30000, 300000, pIntent)
     }
 
+    fun setNotificationBar() {
+        val isNotificationEnabled = MyApp.settings.getBoolean(Settings.IS_NOTIFICATION_ENABLED, false)
+        toggle_notification_bar.isChecked = isNotificationEnabled
+        toggle_notification_bar.setOnCheckedChangeListener{buttonView, isChecked ->
+            if(isChecked) setNotificationBarOn() else setNotificationBarOff()
+        }
+    }
+
+    fun setNotificationBarOn(){
+        Log.d("CoinDetailsActivity", "Notification On")
+        val coin: CoinMarketCapCoin? = SQLite.select()
+                .from(CoinMarketCapCoin::class)
+                .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
+                .querySingle()
+        val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
+        var isPositive = false
+        coin?.let{ isPositive = it.percent_change_24h.toDouble() >= 0 }
+
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val remoteViews = RemoteViews(this.packageName, R.layout.notification_bar)
+        remoteViews.setTextViewText(R.id.notification_fiat_price_tv, coin?.getFormattedFiatPrice())
+        remoteViews.setTextViewText(R.id.notification_currency_tv, currency)
+        remoteViews.setTextViewText(R.id.notification_fiat_percent_change_tv, coin?.getFormattedPercentChanged())
+        remoteViews.setOnClickPendingIntent(R.id.notification_content_container, getActivityPendingIntent())
+        if(isPositive) remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_up))
+        else remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_down))
+
+        val builder  = NotificationCompat.Builder(this, Settings.NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setOngoing(true)
+                .setCustomContentView(remoteViews)
+                .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        notificationManager.notify(Settings.NOTIFICATION_ID, builder.build())
+        MyApp.settings.edit().putBoolean(Settings.IS_NOTIFICATION_ENABLED, true).apply()
+    }
+
+    fun setNotificationBarOff(){
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(Settings.NOTIFICATION_ID)
+        MyApp.settings.edit().putBoolean(Settings.IS_NOTIFICATION_ENABLED, false).apply()
+    }
+
     override fun onPause() {
         super.onPause()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
@@ -149,5 +182,12 @@ class CoinDetailsActivity :
         scheduleAlarm()
         coinUpdate()
         runService(false)
+    }
+
+    private fun getActivityPendingIntent() : PendingIntent{
+        val intent = Intent(this, CoinDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.action = System.currentTimeMillis().toString()
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }

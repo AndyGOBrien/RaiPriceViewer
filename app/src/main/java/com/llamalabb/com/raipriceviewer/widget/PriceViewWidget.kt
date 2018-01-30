@@ -38,25 +38,18 @@ class PriceViewWidget : AppWidgetProvider() {
     private fun updateWidget(context: Context?, appWidgetManager: AppWidgetManager?, appwidgetId: Int, coin: CoinMarketCapCoin){
         val views = RemoteViews(context?.packageName, R.layout.widget_layout)
         val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
-        val currencySymbol = Settings.currencyMap[currency]
         val percentChange = coin.percent_change_24h.toDouble()
-        val absPercentChange = percentChange.toTwoDecimalPlacesAbs()
-        val btcPrice = coin.price_btc
 
-        val fiatPrice = if (currency == "USD") { coin.price_usd.toDouble().toTwoDecimalPlaces() }
-        else { coin.altCurrencyPrice?.toDouble()?.toTwoDecimalPlaces() }
-
-        views.setTextViewText(R.id.widget_fiat_price_tv, currencySymbol + fiatPrice)
+        views.setTextViewText(R.id.widget_fiat_price_tv, coin.getFormattedFiatPrice())
         views.setTextViewText(R.id.widget_currency_tv, currency)
-        views.setTextViewText(R.id.widget_fiat_percent_change_tv,"($absPercentChange%)")
-        views.setTextViewText(R.id.widget_price_crypt_tv, "$btcPrice BTC")
+        views.setTextViewText(R.id.widget_fiat_percent_change_tv,coin.getFormattedPercentChanged())
+        views.setTextViewText(R.id.widget_price_crypt_tv, coin.getFormattedBTCPrice())
         setPercentChangeColor(context, percentChange >= 0, views)
 
         appWidgetManager?.updateAppWidget(appwidgetId, views)
     }
 
-    fun setPercentChangeColor(context: Context?,isPositive: Boolean, views: RemoteViews) {
-
+    private fun setPercentChangeColor(context: Context?,isPositive: Boolean, views: RemoteViews) {
         if (isPositive)
             views.setTextColor(R.id.widget_fiat_percent_change_tv, ContextCompat.getColor(context, R.color.value_up))
         else
