@@ -54,22 +54,19 @@ class CMCApiJobIntentService : JobIntentService() {
             val id = intent.getStringExtra("id")
             val api: ApiService = RetroClient.getCoinMarketCapCoinApiService()
             val call: Call<List<CoinMarketCapCoin>> = api.getCoinMarketCapCoinInfo(id, currency)
-            updateNotification(true)
-            call.enqueue(object: Callback<List<CoinMarketCapCoin>>{
-                override fun onFailure(call: Call<List<CoinMarketCapCoin>>?, t: Throwable?) {}
-                override fun onResponse(call: Call<List<CoinMarketCapCoin>>?, response: Response<List<CoinMarketCapCoin>>?) {
-                    response?.body()?.let{
-                        it[0].save()
-                        updateNotification(false)
-                        broadcastWidgetUpdate()
-                        MyApp.settings.edit().putLong(Settings.LAST_UPDATE, System.currentTimeMillis()).commit()
-                        val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
-                        broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
-                        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(broadcastIntent)
-                        Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
-                    }
-                }
-            })
+            try{
+                val coinData = call.execute().body()?.get(0)
+                coinData?.save()
+                MyApp.settings
+                        .edit()
+                        .putLong(Settings.LAST_UPDATE, System.currentTimeMillis())
+                        .commit()
+                Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
+            } catch(e: Exception) { return }
+            finally {
+                broadcastWidgetUpdate()
+                updateNotification()
+            }
         }
         Log.d("CMCApiJobIntentService", "Service Ended")
     }
@@ -80,7 +77,7 @@ class CMCApiJobIntentService : JobIntentService() {
         myWidget.onUpdate(this, AppWidgetManager.getInstance(this), ids)
     }
 
-    private fun updateNotification(isLoading: Boolean){
+    private fun updateNotification(){
         val isNotificationEnabled = MyApp.settings.getBoolean(Settings.IS_NOTIFICATION_ENABLED, false)
         if(isNotificationEnabled){
             val coin: CoinMarketCapCoin? = SQLite.select()
