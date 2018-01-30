@@ -3,6 +3,7 @@ package com.llamalabb.com.raipriceviewer.service
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -13,10 +14,12 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import com.llamalabb.com.raipriceviewer.MyApp
 import com.llamalabb.com.raipriceviewer.R
 import com.llamalabb.com.raipriceviewer.Settings
+import com.llamalabb.com.raipriceviewer.coindetails.CoinDetailsActivity
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
 import com.llamalabb.com.raipriceviewer.retrofit.ApiService
@@ -26,6 +29,8 @@ import com.raizlabs.android.dbflow.kotlinextensions.from
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 /**
@@ -49,22 +54,22 @@ class CMCApiJobIntentService : JobIntentService() {
             val id = intent.getStringExtra("id")
             val api: ApiService = RetroClient.getCoinMarketCapCoinApiService()
             val call: Call<List<CoinMarketCapCoin>> = api.getCoinMarketCapCoinInfo(id, currency)
-            try{
-                val coinData = call.execute().body()?.get(0)
-                coinData?.save()
-                MyApp.settings
-                        .edit()
-                        .putLong(Settings.LAST_UPDATE, System.currentTimeMillis())
-                        .commit()
-                Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
-            } catch(e: Exception) { return }
-            finally {
-                broadcastWidgetUpdate()
-                updateNotification()
-            }
-            val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
-            broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
-            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
+            updateNotification(true)
+            call.enqueue(object: Callback<List<CoinMarketCapCoin>>{
+                override fun onFailure(call: Call<List<CoinMarketCapCoin>>?, t: Throwable?) {}
+                override fun onResponse(call: Call<List<CoinMarketCapCoin>>?, response: Response<List<CoinMarketCapCoin>>?) {
+                    response?.body()?.let{
+                        it[0].save()
+                        updateNotification(false)
+                        broadcastWidgetUpdate()
+                        MyApp.settings.edit().putLong(Settings.LAST_UPDATE, System.currentTimeMillis()).commit()
+                        val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
+                        broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
+                        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(broadcastIntent)
+                        Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
+                    }
+                }
+            })
         }
         Log.d("CMCApiJobIntentService", "Service Ended")
     }
@@ -75,7 +80,7 @@ class CMCApiJobIntentService : JobIntentService() {
         myWidget.onUpdate(this, AppWidgetManager.getInstance(this), ids)
     }
 
-    private fun updateNotification(){
+    private fun updateNotification(isLoading: Boolean){
         val isNotificationEnabled = MyApp.settings.getBoolean(Settings.IS_NOTIFICATION_ENABLED, false)
         if(isNotificationEnabled){
             val coin: CoinMarketCapCoin? = SQLite.select()
@@ -92,6 +97,7 @@ class CMCApiJobIntentService : JobIntentService() {
             remoteViews.setTextViewText(R.id.notification_fiat_price_tv, coin?.getFormattedFiatPrice())
             remoteViews.setTextViewText(R.id.notification_currency_tv, currency)
             remoteViews.setTextViewText(R.id.notification_fiat_percent_change_tv, coin?.getFormattedPercentChanged())
+            remoteViews.setOnClickPendingIntent(R.id.notification_content_container, getActivityPendingIntent())
             if(isPositive) remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_up))
             else remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_down))
 
@@ -110,6 +116,13 @@ class CMCApiJobIntentService : JobIntentService() {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+    private fun getActivityPendingIntent() : PendingIntent{
+        val intent = Intent(this, CoinDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.action = System.currentTimeMillis().toString()
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
 }

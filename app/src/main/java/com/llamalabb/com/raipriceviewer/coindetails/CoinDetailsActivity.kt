@@ -149,6 +149,7 @@ class CoinDetailsActivity :
         remoteViews.setTextViewText(R.id.notification_fiat_price_tv, coin?.getFormattedFiatPrice())
         remoteViews.setTextViewText(R.id.notification_currency_tv, currency)
         remoteViews.setTextViewText(R.id.notification_fiat_percent_change_tv, coin?.getFormattedPercentChanged())
+        remoteViews.setOnClickPendingIntent(R.id.notification_content_container, getActivityPendingIntent())
         if(isPositive) remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_up))
         else remoteViews.setTextColor(R.id.notification_fiat_percent_change_tv, ContextCompat.getColor(this, R.color.value_down))
 
@@ -162,7 +163,6 @@ class CoinDetailsActivity :
         notificationManager.notify(Settings.NOTIFICATION_ID, builder.build())
         MyApp.settings.edit().putBoolean(Settings.IS_NOTIFICATION_ENABLED, true).apply()
     }
-
 
     fun setNotificationBarOff(){
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -182,5 +182,12 @@ class CoinDetailsActivity :
         scheduleAlarm()
         coinUpdate()
         runService(false)
+    }
+
+    private fun getActivityPendingIntent() : PendingIntent{
+        val intent = Intent(this, CoinDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.action = System.currentTimeMillis().toString()
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }
