@@ -67,6 +67,9 @@ class CMCApiJobIntentService : JobIntentService() {
                 broadcastWidgetUpdate()
                 updateNotification()
             }
+            val broadcastIntent = Intent(BROADCAST_PRICE_CHANGE)
+            broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
         }
         Log.d("CMCApiJobIntentService", "Service Ended")
     }
