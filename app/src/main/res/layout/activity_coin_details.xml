@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="RaiBlocks"
+            android:text="Nano"
             android:textColor="@android:color/black"
             android:textSize="30sp" />
 
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="XRB" />
+            android:text="NANO" />
 
     </LinearLayout>
 
@@ -129,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Rank: 0"
-                android:textColor="@android:color/holo_blue_dark"
+                android:textColor="@color/nano_logo"
                 android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="@+id/market_cap_title"
                 app:layout_constraintTop_toBottomOf="@+id/market_cap_tv" />
@@ -173,13 +173,13 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
-        android:layout_height="97dp"
-        android:layout_marginTop="32dp"
+        android:layout_height="75"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/raiblocks_logo" />
+        app:srcCompat="@drawable/NANO" />
 
     <Button
         android:id="@+id/currency_select_button"

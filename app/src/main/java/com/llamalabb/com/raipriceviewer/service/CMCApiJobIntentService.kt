@@ -14,7 +14,6 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
-import android.view.View
 import android.widget.RemoteViews
 import com.llamalabb.com.raipriceviewer.MyApp
 import com.llamalabb.com.raipriceviewer.R
@@ -29,8 +28,7 @@ import com.raizlabs.android.dbflow.kotlinextensions.from
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 
 /**
