@@ -1,4 +1,4 @@
-package com.llamalabb.com.raipriceviewer.retrofit
+package com.llamalabb.com.raipriceviewer.service.api.cmc
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 /**
  * Created by andyg on 1/2/2018.
  */
-object RetroClient {
+object CMCClient {
 
     private val COIN_MARKET_CAP_BASE_URL = "https://api.coinmarketcap.com"
 
@@ -18,5 +18,6 @@ object RetroClient {
                 .build()
     }
 
-    fun getCoinMarketCapCoinApiService() : ApiService = getCoinMarketCapCoinRetrofitInstance().create(ApiService::class.java)
+    fun getCoinMarketCapCoinApiService() : CMCApiService = getCoinMarketCapCoinRetrofitInstance().create(CMCApiService::class.java)
+
 }

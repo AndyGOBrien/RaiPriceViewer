@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
-import com.llamalabb.com.raipriceviewer.service.MyAlarmReceiver
+import com.llamalabb.com.raipriceviewer.service.background.MyAlarmReceiver
 
 /**
  * Created by andy on 1/26/18.

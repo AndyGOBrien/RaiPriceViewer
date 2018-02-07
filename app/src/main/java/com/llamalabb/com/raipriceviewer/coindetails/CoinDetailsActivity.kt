@@ -19,14 +19,20 @@ import android.widget.RemoteViews
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
+import com.google.gson.JsonObject
 import com.llamalabb.com.raipriceviewer.*
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
-import com.llamalabb.com.raipriceviewer.service.CMCApiJobIntentService
-import com.llamalabb.com.raipriceviewer.service.MyAlarmReceiver
+import com.llamalabb.com.raipriceviewer.service.api.nanode.NanodeBody
+import com.llamalabb.com.raipriceviewer.service.api.nanode.NanodeClient
+import com.llamalabb.com.raipriceviewer.service.background.CMCApiJobIntentService
+import com.llamalabb.com.raipriceviewer.service.background.MyAlarmReceiver
 import com.raizlabs.android.dbflow.kotlinextensions.from
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import kotlinx.android.synthetic.main.activity_coin_details.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CoinDetailsActivity :
         AppCompatActivity(),

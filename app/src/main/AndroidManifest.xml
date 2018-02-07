@@ -23,10 +23,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.CMCApiJobIntentService"
+        <service android:name=".service.background.CMCApiJobIntentService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <receiver android:name=".service.MyAlarmReceiver"
+        <receiver android:name=".service.background.MyAlarmReceiver"
             android:process=":remote">
             <intent-filter>
                 <action android:name ="com.llamalabb.raipriceviewer.service.alarm" />

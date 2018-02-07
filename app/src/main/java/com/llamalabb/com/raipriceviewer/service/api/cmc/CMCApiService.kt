@@ -1,4 +1,4 @@
-package com.llamalabb.com.raipriceviewer.retrofit
+package com.llamalabb.com.raipriceviewer.service.api.cmc
 
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import retrofit2.Call
@@ -9,7 +9,7 @@ import retrofit2.http.Query
 /**
  * Created by andyg on 1/2/2018.
  */
-interface ApiService {
+interface CMCApiService {
     @GET("/v1/ticker")
     fun getCoinMarketCapListInfo(
             @Query(value="limit") limit: String = "100",

@@ -1,4 +1,4 @@
-package com.llamalabb.com.raipriceviewer.service
+package com.llamalabb.com.raipriceviewer.service.background
 
 import android.content.BroadcastReceiver
 import android.content.Context

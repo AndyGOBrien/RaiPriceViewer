@@ -1,4 +1,4 @@
-package com.llamalabb.com.raipriceviewer.service
+package com.llamalabb.com.raipriceviewer.service.background
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,7 +13,6 @@ import android.support.v4.app.JobIntentService
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
 import android.widget.RemoteViews
 import com.llamalabb.com.raipriceviewer.MyApp
 import com.llamalabb.com.raipriceviewer.R
@@ -21,8 +20,8 @@ import com.llamalabb.com.raipriceviewer.Settings
 import com.llamalabb.com.raipriceviewer.coindetails.CoinDetailsActivity
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin
 import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table
-import com.llamalabb.com.raipriceviewer.retrofit.ApiService
-import com.llamalabb.com.raipriceviewer.retrofit.RetroClient
+import com.llamalabb.com.raipriceviewer.service.api.cmc.CMCApiService
+import com.llamalabb.com.raipriceviewer.service.api.cmc.CMCClient
 import com.llamalabb.com.raipriceviewer.widget.PriceViewWidget
 import com.raizlabs.android.dbflow.kotlinextensions.from
 import com.raizlabs.android.dbflow.kotlinextensions.save
@@ -45,12 +44,11 @@ class CMCApiJobIntentService : JobIntentService() {
 
     @SuppressLint("ApplySharedPref")
     override fun onHandleWork(intent: Intent) {
-        Log.d("CMCApiJobIntentService", "Service Started")
         if(isNetworkAvailable(this)) {
             MyApp.settings = this.getSharedPreferences("Settings", Context.MODE_PRIVATE)
             val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
             val id = intent.getStringExtra("id")
-            val api: ApiService = RetroClient.getCoinMarketCapCoinApiService()
+            val api: CMCApiService = CMCClient.getCoinMarketCapCoinApiService()
             val call: Call<List<CoinMarketCapCoin>> = api.getCoinMarketCapCoinInfo(id, currency)
             try{
                 val coinData = call.execute().body()?.get(0)
@@ -59,7 +57,6 @@ class CMCApiJobIntentService : JobIntentService() {
                         .edit()
                         .putLong(Settings.LAST_UPDATE, System.currentTimeMillis())
                         .commit()
-                Log.d("CMCApiJobIntentService", "Network Call and DB storage Complete")
             } catch(e: Exception) { return }
             finally {
                 broadcastWidgetUpdate()
@@ -69,7 +66,6 @@ class CMCApiJobIntentService : JobIntentService() {
             broadcastIntent.putExtra("resultCode", Activity.RESULT_OK)
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
         }
-        Log.d("CMCApiJobIntentService", "Service Ended")
     }
 
     private fun broadcastWidgetUpdate(){
