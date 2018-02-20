@@ -2,6 +2,7 @@ package com.llamalabb.com.raipriceviewer.service.background
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -9,6 +10,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.os.Build
 import android.support.v4.app.JobIntentService
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
@@ -79,13 +81,19 @@ class CMCApiJobIntentService : JobIntentService() {
         if(isNotificationEnabled){
             val coin: CoinMarketCapCoin? = SQLite.select()
                     .from(CoinMarketCapCoin::class)
-                    .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
+                    .where(CoinMarketCapCoin_Table.id.eq(Settings.COIN_ID))
                     .querySingle()
             val currency = MyApp.settings.getString(Settings.CURRENCY, "USD")
             var isPositive = false
             coin?.let{ isPositive = it.percent_change_24h.toDouble() >= 0 }
 
             val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.createNotificationChannel(
+                        NotificationChannel(Settings.NOTIFICATION_CHANNEL_ID,
+                                "Nano Notification Channel",
+                                NotificationManager.IMPORTANCE_LOW))
+            }
 
             val remoteViews = RemoteViews(this.packageName, R.layout.notification_bar)
             remoteViews.setTextViewText(R.id.notification_fiat_price_tv, coin?.getFormattedFiatPrice())

@@ -9,6 +9,7 @@ object Settings {
     const val IS_NOTIFICATION_ENABLED = "is_notification_enabled"
     const val NOTIFICATION_CHANNEL_ID = "rai_price_notification_01"
     const val NOTIFICATION_ID = 209212
+    const val COIN_ID = "nano"
     val currencyMap = mapOf(
             Pair("AUD","$"),
             Pair("BRL","R$"),

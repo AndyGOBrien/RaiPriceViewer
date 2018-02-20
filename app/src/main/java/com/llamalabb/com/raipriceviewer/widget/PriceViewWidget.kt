@@ -25,7 +25,7 @@ class PriceViewWidget : AppWidgetProvider() {
 
         val coin: CoinMarketCapCoin? = SQLite.select()
                 .from(CoinMarketCapCoin::class)
-                .where(CoinMarketCapCoin_Table.id.eq("raiblocks"))
+                .where(CoinMarketCapCoin_Table.id.eq(Settings.COIN_ID))
                 .querySingle()
 
         appWidgetIds?.forEach {id ->

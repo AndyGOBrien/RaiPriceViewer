@@ -4,7 +4,6 @@ package com.llamalabb.com.raipriceviewer.model
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.llamalabb.com.raipriceviewer.*
-import com.llamalabb.com.raipriceviewer.model.CoinMarketCapCoin_Table.*
 import com.raizlabs.android.dbflow.annotation.Column
 import com.raizlabs.android.dbflow.annotation.PrimaryKey
 import com.raizlabs.android.dbflow.annotation.Table

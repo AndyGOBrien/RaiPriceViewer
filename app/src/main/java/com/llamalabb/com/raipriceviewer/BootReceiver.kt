@@ -20,7 +20,7 @@ class BootReceiver : BroadcastReceiver() {
 
     private fun scheduleAlarm(context: Context?) {
         val i = Intent(context, MyAlarmReceiver::class.java)
-        i.putExtra("id", "raiblocks")
+        i.putExtra("id", Settings.COIN_ID)
         i.action = MyAlarmReceiver.ACTION
         val pIntent = PendingIntent.getBroadcast(context, MyAlarmReceiver.REQUEST_CODE, i, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarm = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
